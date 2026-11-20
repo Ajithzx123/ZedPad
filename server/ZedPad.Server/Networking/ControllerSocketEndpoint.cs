@@ -14,12 +14,16 @@ public static partial class ControllerSocketEndpoint
     {
         app.Use(async (context, next) =>
         {
-            LogIncomingRequest(
-                app.Logger,
-                context.Request.Method,
-                context.Request.Path,
-                context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
-                context.Request.Headers.Upgrade.ToString());
+            if (app.Logger.IsEnabled(LogLevel.Debug))
+            {
+                LogIncomingRequest(
+                    app.Logger,
+                    context.Request.Method,
+                    context.Request.Path,
+                    context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                    context.Request.Headers.Upgrade.ToString());
+            }
+
             await next();
         });
 
