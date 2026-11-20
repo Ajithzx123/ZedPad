@@ -25,9 +25,9 @@ Mac note: all projects target plain `net8.0` (no `net8.0-windows`), so the full 
 - [ ] Clean build + tests green on Dell and Mac
 
 ## Phase 1 - Connectivity spike
-- [ ] Console receiver: Kestrel WebSocket, prints IP/port/status/logs
-- [ ] Flutter client connects, sends Ping and binary `GamepadState`
-- [ ] Protocol codec in Core (C#) and `core/protocol` (Dart) sharing hex vectors
+- [x] Console receiver: Kestrel WebSocket, prints IP/port/status/logs
+- [x] Flutter client connects, sends Ping and binary `GamepadState`
+- [x] Protocol codec in Core (C#) and `core/protocol` (Dart) sharing hex vectors
 - Done when: real phone frames appear in the PC console.
 
 ## Phase 2 - Pairing and sessions
@@ -69,5 +69,6 @@ Mac note: all projects target plain `net8.0` (no `net8.0-windows`), so the full 
 - One phase item at a time; each ends with format + analyze + tests + diff review.
 - Do not start the next phase without approval.
 - Every session: read `docs/STATUS.md` first, update it before ending.
+
 
 

@@ -1,0 +1,23 @@
+[
+  {
+    "name": "neutral",
+    "sequence": 0,
+    "leftX": 0, "leftY": 0, "rightX": 0, "rightY": 0,
+    "buttons": 0, "leftTrigger": 0, "rightTrigger": 0,
+    "hex": "30 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00"
+  },
+  {
+    "name": "full right, A pressed",
+    "sequence": 1,
+    "leftX": 32767, "leftY": 0, "rightX": 0, "rightY": 0,
+    "buttons": 1, "leftTrigger": 0, "rightTrigger": 0,
+    "hex": "30 01 01 00 FF 7F 00 00 00 00 00 00 01 00 00 00"
+  },
+  {
+    "name": "mixed",
+    "sequence": 258,
+    "leftX": -32768, "leftY": 100, "rightX": 0, "rightY": -1,
+    "buttons": 9216, "leftTrigger": 255, "rightTrigger": 7,
+    "hex": "30 01 02 01 00 80 64 00 00 00 FF FF 00 24 FF 07"
+  }
+]

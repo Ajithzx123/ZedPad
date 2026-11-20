@@ -50,4 +50,5 @@ Phone sends state up to 60 Hz and on change; heartbeat `ping` every ~1 s. The PC
 | Full right, A pressed | seq 1, LX 32767, buttons 0x0001 | `30 01 01 00 FF 7F 00 00 00 00 00 00 01 00 00 00` |
 | Mixed | seq 258, LX -32768, LY 100, RX 0, RY -1, buttons 0x2400, LT 255, RT 7 | `30 01 02 01 00 80 64 00 00 00 FF FF 00 24 FF 07` |
 
-Test vector files live in `docs/protocol-vectors.json` once the codecs exist (Phase 1).
+The same vectors are in `docs/protocol-vectors.json`; the C# and Dart tests load that file, so edit both together.
+
