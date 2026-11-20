@@ -31,10 +31,10 @@ Mac note: all projects target plain `net8.0` (no `net8.0-windows`), so the full 
 - Done when: real phone frames appear in the PC console. **Verified 2026-11-20** (Realme RMX2170, Android 12, via PC hotspot).
 
 ## Phase 2 - Pairing and sessions
-- [ ] CSPRNG one-time token, ~2 min expiry, single use, never logged
-- [ ] QR in console (IP:port+token); phone scans or enters manually
-- [ ] Session creation, `PairAck`/`PairReject`, reject unauthorized
-- [ ] Phone connection state UI (Disconnected, Connecting, Pairing, Connected, Reconnecting)
+- [x] CSPRNG one-time token, ~2 min expiry, single use, never logged
+- [x] QR in console (IP:port+token); phone scans or enters manually
+- [x] Session creation, `PairAck`/`PairReject`, reject unauthorized
+- [x] Phone connection state UI (Disconnected, Connecting, Pairing, Connected, Failed; Reconnecting comes in Phase 5)
 
 ## Phase 3 - Input engine (critical)
 - [ ] `IInputSink` in Core, `KeyboardSink` (SendInput, scan codes) in Input
@@ -69,6 +69,7 @@ Mac note: all projects target plain `net8.0` (no `net8.0-windows`), so the full 
 - One phase item at a time; each ends with format + analyze + tests + diff review.
 - Do not start the next phase without approval.
 - Every session: read `docs/STATUS.md` first, update it before ending.
+
 
 
 

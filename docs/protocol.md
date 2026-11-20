@@ -13,7 +13,24 @@ WebSocket (`ws://<pc-ip>:<port>/`). Control messages are **text** frames (JSON).
 | `pairReject` | PC to phone | `reason` (`badToken`, `expired`, `version`, `busy`) |
 | `ping` / `pong` | both | `t` (sender timestamp, ms) |
 
-Tokens are single-use and expire after ~2 minutes. Until `pairAck`, any binary frame is rejected. Version negotiation: the PC replies with the highest version both support, or `pairReject(version)`.
+JSON shapes (field names are exact):
+```
+{"type":"pair","token":"ABCD2345","deviceName":"ZedPad Phone","version":1}
+{"type":"pairAck","sessionId":"<guid>","slot":1,"version":1}
+{"type":"pairReject","reason":"badToken"}
+{"type":"ping","t":1700000000000}
+{"type":"pong","t":1700000000000}
+```
+
+### Pairing rules
+- Token: 8 characters from `ABCDEFGHJKLMNPQRSTUVWXYZ23456789` (CSPRNG, 40 bits), shown as `ABCD-EFGH`. Receivers ignore case, spaces and dashes.
+- Single use, valid for 2 minutes. Issuing a new token invalidates the previous one. Never written to logs.
+- A new connection must send `pair` within 10 s; the server closes it otherwise. Before `pairAck` any other message (including binary frames) closes the connection with `PolicyViolation`.
+- A wrong or expired token gets `pairReject` (`badToken` / `expired`) after a short delay, then the connection is closed. A version mismatch gets `pairReject(version)` and does not consume the token.
+- Only protocol version 1 exists, so negotiation is exact match for now.
+
+### Pairing link (QR code content)
+`zedpad://pair?h=<host>&h=<host>&p=<port>&t=<token>`: one `h` per reachable PC address (tried in order by the phone), then the port and the token. Shared vectors: `docs/pairing-link-vectors.json`.
 
 ## GamepadState (binary, 16 bytes)
 | Offset | Size | Field | Type |

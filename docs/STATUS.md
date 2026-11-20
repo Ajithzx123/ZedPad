@@ -3,20 +3,23 @@
 Read this first on any machine. Update it at the end of every session and commit + push.
 
 ## Current position
-- **Phase:** 1 - Connectivity spike: **complete and verified on a real phone**.
+- **Phase:** 2 - Pairing and sessions: code complete, automated tests green, **not yet tested on a real phone**.
 - **Last updated:** 2026-11-20 on Dell (Windows)
-- **Next step:** Phase 2 (pairing and sessions) after user approval.
+- **Next step:** real-phone pairing test (QR scan and manual code), then commit/push and approve Phase 3.
 
 ## Done
-- Phase 0 foundation. Repo: https://github.com/Ajithzx123/ZedPad (public; office account `Ajith-suktha` is a collaborator). CI green on both jobs (Flutter pinned to 3.44.1 in `ci.yml`).
-- Phase 1: C# and Dart `GamepadState` codecs sharing `docs/protocol-vectors.json`; Kestrel WebSocket server on `0.0.0.0:8765` (ping/pong, state logging, invalid/stale/oversized handling, per-request logging); Flutter connect screen with selectable error/log text.
-- Real test passed: Realme RMX2170 (Android 12) on the PC's Windows hotspot connected to `192.168.137.1:8765`; server logged `State from 192.168.137.31: seq=1 L=(32767,0) buttons=0x0001`.
-- Gates green: `dotnet format/build/test` (20 tests), `dart format`, `flutter analyze`, `flutter test` (12 tests).
+- Phase 0 foundation and Phase 1 connectivity spike (verified on a Realme RMX2170 over the PC hotspot). Repo: https://github.com/Ajithzx123/ZedPad (public; office account `Ajith-suktha` is a collaborator). CI green at c111085.
+- Phase 2 (uncommitted):
+  - Core: `PairingTokenService` (8 chars, CSPRNG, 2 min, single use, constant-time compare, injectable clock), `PairingLink`, `ControlMessages` (parse + outgoing JSON).
+  - Server: connection must pair within 10 s; unpaired data closes the connection; wrong/expired token gets `pairReject` after 500 ms then closes; version mismatch does not burn the token. Console prints a QR code plus a typed code; press R for a new code. Virtual adapters (vEthernet, Hyper-V, WSL...) are left out of the advertised addresses. Request logging moved to Debug level; Microsoft logs filtered to Warning.
+  - App: `ConnectionController.pair(hosts, port, token)` tries each host (3 s timeout) then pairs (5 s); statuses Disconnected, Connecting, Pairing, Connected, Failed; QR scan screen (`mobile_scanner`, CAMERA permission) and manual entry (address, port, code); clear messages for wrong/expired code.
+  - Docs: `protocol.md` pairing rules and link format; shared vectors in `docs/pairing-link-vectors.json`.
+- Gates green on Dell: .NET 46 tests, Flutter 29 tests, format + analyze clean.
 
 ## Known limits
-- No pairing/auth yet: the server accepts any LAN client. Only run on trusted networks until Phase 2.
-- Request logging is verbose (Kestrel + `Incoming ...` lines); trim in Phase 2.
-- Port 8765 is also used by another program (`PhoneBoxAgent`) on `127.0.0.1` on the Dell; consider moving to a less common port.
+- Console QR assumes a dark terminal background (light modules drawn as filled blocks). A light-theme console shows an inverted code; use the typed code instead.
+- The server issues one token at a time and a single slot (multi-phone comes in Phase 7). No reconnect yet (Phase 5).
+- Port 8765 is also used by another program (`PhoneBoxAgent`) on `127.0.0.1` on the Dell; consider a less common port.
 - Mac build/test not yet verified; `flutter doctor` reports Android licenses not accepted on the Dell.
 
 ## Lessons (Windows networking)
@@ -25,14 +28,15 @@ Read this first on any machine. Update it at the end of every session and commit
 - Non-admin sessions get "Access is denied" from `Get-NetFirewallRule`; an empty result there does not mean no rule exists.
 - adb wireless debugging port changes between sessions; use `flutter devices`.
 
-## How to run the Phase 1 test
-1. PC: `cd server`, `dotnet run --project ZedPad.Server`. Note the `Address: ws://...` lines.
-2. Phone on the same network (or PC hotspot): run the app from `app/` (VS Code F5 or `flutter run`), enter PC IP and port 8765, Connect, Ping, Send test state.
-3. Server console shows `Device connected` and `State from ...`.
+## How to test pairing
+1. PC: in a real terminal (so R works) `cd server`, `dotnet run --project ZedPad.Server`. A QR and a code like `ABCD-EFGH` appear (valid 2 minutes; press R for a new one).
+2. Phone on the same network or PC hotspot: run the app from `app/`, tap Scan QR code, scan the console. Or enter address, port 8765 and the code manually.
+3. Phone shows Connected; server logs `Device paired`. Ping and Send test state still work.
+4. Try a wrong code (expect "Wrong pairing code") and reuse of the same code (expect rejection).
 
 ## Machine notes
 - Dell (Windows): Flutter at `D:\DevTools\Flutter`. .NET SDK at `C:\Program Files\dotnet`. Admin PowerShell needed only for firewall rules.
 - Mac: install Flutter 3.44.1, .NET 8 SDK, Android Studio/SDK; clone repo; whole solution builds there.
 
 ## Session log
-- 2026-11-20 (Dell): planning, Phase 0 scaffold, Phase 1 code, CI fix, real-phone test passed after firewall fix.
+- 2026-11-20 (Dell): planning, Phase 0 scaffold, Phase 1 code and real-phone test, CI fix, Phase 2 code complete with gates green.

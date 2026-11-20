@@ -5,6 +5,10 @@
     <ProjectReference Include="..\ZedPad.Input\ZedPad.Input.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Net.Codecrete.QrCodeGenerator" Version="3.2.1" />
+  </ItemGroup>
+
   <PropertyGroup>
     <OutputType>Exe</OutputType>
   </PropertyGroup>

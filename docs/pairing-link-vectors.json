@@ -1,0 +1,16 @@
+[
+  {
+    "name": "single host",
+    "hosts": ["192.168.0.197"],
+    "port": 8765,
+    "token": "ABCD2345",
+    "uri": "zedpad://pair?h=192.168.0.197&p=8765&t=ABCD2345"
+  },
+  {
+    "name": "two hosts",
+    "hosts": ["192.168.0.197", "192.168.137.1"],
+    "port": 8765,
+    "token": "WXYZ6789",
+    "uri": "zedpad://pair?h=192.168.0.197&h=192.168.137.1&p=8765&t=WXYZ6789"
+  }
+]

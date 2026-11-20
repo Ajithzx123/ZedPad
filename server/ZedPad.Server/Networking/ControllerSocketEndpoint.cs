@@ -1,9 +1,14 @@
+using ZedPad.Core.Pairing;
+
 namespace ZedPad.Server.Networking;
 
 public static partial class ControllerSocketEndpoint
 {
-    public static void AddControllerSocket(this IServiceCollection services) =>
+    public static void AddControllerSocket(this IServiceCollection services)
+    {
+        services.AddSingleton<PairingTokenService>();
         services.AddSingleton<ControllerSocketHandler>();
+    }
 
     public static void MapControllerSocket(this WebApplication app)
     {
@@ -33,6 +38,6 @@ public static partial class ControllerSocketEndpoint
         });
     }
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "Incoming {Method} {Path} from {Remote} (upgrade: '{Upgrade}')")]
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Incoming {Method} {Path} from {Remote} (upgrade: '{Upgrade}')")]
     private static partial void LogIncomingRequest(ILogger logger, string method, string path, string remote, string upgrade);
 }

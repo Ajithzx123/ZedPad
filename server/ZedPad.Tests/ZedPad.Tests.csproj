@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <Content Include="..\..\docs\protocol-vectors.json" Link="protocol-vectors.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\docs\pairing-link-vectors.json" Link="pairing-link-vectors.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>

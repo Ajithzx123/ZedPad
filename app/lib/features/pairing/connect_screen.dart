@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/networking/connection_controller.dart';
+import '../../core/protocol/pairing_link.dart';
+import 'scan_screen.dart';
 
-/// Phase 1 spike: manual IP:port entry. Becomes the pairing screen in Phase 2.
+/// Pairs with the PC by QR code, or by typing its address and pairing code.
 class ConnectScreen extends StatefulWidget {
   const ConnectScreen({super.key});
 
@@ -14,93 +16,136 @@ class ConnectScreen extends StatefulWidget {
 class _ConnectScreenState extends State<ConnectScreen> {
   final _host = TextEditingController();
   final _port = TextEditingController(text: '8765');
+  final _code = TextEditingController();
 
   @override
   void dispose() {
     _host.dispose();
     _port.dispose();
+    _code.dispose();
     super.dispose();
   }
 
-  void _connect(ConnectionController controller) {
+  Future<void> _scan(ConnectionController controller) async {
+    final link = await Navigator.of(
+      context,
+    ).push<PairingLink>(MaterialPageRoute(builder: (_) => const ScanScreen()));
+    if (link == null) return;
+    await controller.pair(
+      hosts: link.hosts,
+      port: link.port,
+      token: link.token,
+    );
+  }
+
+  Future<void> _connectManually(ConnectionController controller) async {
     final port = int.tryParse(_port.text.trim());
     final host = _host.text.trim();
-    if (host.isEmpty || port == null) return;
-    controller.connect(host, port);
+    final code = _code.text.trim();
+    if (host.isEmpty || port == null || code.isEmpty) return;
+    await controller.pair(hosts: [host], port: port, token: code);
   }
 
   @override
   Widget build(BuildContext context) {
     final controller = context.watch<ConnectionController>();
     final connected = controller.status == ConnectionStatus.connected;
-    final busy = controller.status == ConnectionStatus.connecting;
+    final busy =
+        controller.status == ConnectionStatus.connecting ||
+        controller.status == ConnectionStatus.pairing;
 
     return Scaffold(
       appBar: AppBar(title: const Text('ZedPad')),
-      body: Padding(
+      body: ListView(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _AddressFields(host: _host, port: _port, enabled: !connected),
-            const SizedBox(height: 12),
-            _StatusLine(controller: controller),
-            const SizedBox(height: 12),
-            _Actions(
-              connected: connected,
-              busy: busy,
-              onConnect: () => _connect(controller),
-              onDisconnect: controller.disconnect,
-              onPing: controller.sendPing,
-              onState: controller.sendTestState,
+        children: [
+          _StatusLine(controller: controller),
+          const SizedBox(height: 12),
+          if (!connected) ...[
+            FilledButton.icon(
+              onPressed: busy ? null : () => _scan(controller),
+              icon: const Icon(Icons.qr_code_scanner),
+              label: const Text('Scan QR code'),
+            ),
+            const SizedBox(height: 20),
+            const Text('Or enter the details shown on the PC'),
+            const SizedBox(height: 8),
+            _ManualFields(
+              host: _host,
+              port: _port,
+              code: _code,
+              enabled: !busy,
             ),
             const SizedBox(height: 12),
-            Expanded(child: _LogView(lines: controller.log)),
-          ],
-        ),
+            OutlinedButton(
+              onPressed: busy ? null : () => _connectManually(controller),
+              child: const Text('Connect'),
+            ),
+          ] else
+            _ConnectedActions(controller: controller),
+          const SizedBox(height: 16),
+          SizedBox(height: 240, child: _LogView(lines: controller.log)),
+        ],
       ),
     );
   }
 }
 
-class _AddressFields extends StatelessWidget {
-  const _AddressFields({
+class _ManualFields extends StatelessWidget {
+  const _ManualFields({
     required this.host,
     required this.port,
+    required this.code,
     required this.enabled,
   });
 
   final TextEditingController host;
   final TextEditingController port;
+  final TextEditingController code;
   final bool enabled;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Column(
       children: [
-        Expanded(
-          flex: 3,
-          child: TextField(
-            controller: host,
-            enabled: enabled,
-            keyboardType: TextInputType.number,
-            decoration: const InputDecoration(
-              labelText: 'PC address',
-              hintText: '192.168.1.20',
-              border: OutlineInputBorder(),
+        Row(
+          children: [
+            Expanded(
+              flex: 3,
+              child: TextField(
+                controller: host,
+                enabled: enabled,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: 'PC address',
+                  hintText: '192.168.1.20',
+                  border: OutlineInputBorder(),
+                ),
+              ),
             ),
-          ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: TextField(
+                controller: port,
+                enabled: enabled,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: 'Port',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ),
+          ],
         ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: TextField(
-            controller: port,
-            enabled: enabled,
-            keyboardType: TextInputType.number,
-            decoration: const InputDecoration(
-              labelText: 'Port',
-              border: OutlineInputBorder(),
-            ),
+        const SizedBox(height: 12),
+        TextField(
+          controller: code,
+          enabled: enabled,
+          textCapitalization: TextCapitalization.characters,
+          decoration: const InputDecoration(
+            labelText: 'Pairing code',
+            hintText: 'ABCD-EFGH',
+            border: OutlineInputBorder(),
           ),
         ),
       ],
@@ -118,6 +163,7 @@ class _StatusLine extends StatelessWidget {
     final text = switch (controller.status) {
       ConnectionStatus.disconnected => 'Disconnected',
       ConnectionStatus.connecting => 'Connecting...',
+      ConnectionStatus.pairing => 'Pairing...',
       ConnectionStatus.connected => 'Connected',
       ConnectionStatus.failed => controller.error ?? 'Connection failed',
     };
@@ -131,22 +177,10 @@ class _StatusLine extends StatelessWidget {
   }
 }
 
-class _Actions extends StatelessWidget {
-  const _Actions({
-    required this.connected,
-    required this.busy,
-    required this.onConnect,
-    required this.onDisconnect,
-    required this.onPing,
-    required this.onState,
-  });
+class _ConnectedActions extends StatelessWidget {
+  const _ConnectedActions({required this.controller});
 
-  final bool connected;
-  final bool busy;
-  final VoidCallback onConnect;
-  final VoidCallback onDisconnect;
-  final VoidCallback onPing;
-  final VoidCallback onState;
+  final ConnectionController controller;
 
   @override
   Widget build(BuildContext context) {
@@ -154,22 +188,16 @@ class _Actions extends StatelessWidget {
       spacing: 8,
       runSpacing: 8,
       children: [
-        if (connected)
-          OutlinedButton(
-            onPressed: onDisconnect,
-            child: const Text('Disconnect'),
-          )
-        else
-          FilledButton(
-            onPressed: busy ? null : onConnect,
-            child: const Text('Connect'),
-          ),
         OutlinedButton(
-          onPressed: connected ? onPing : null,
+          onPressed: controller.disconnect,
+          child: const Text('Disconnect'),
+        ),
+        OutlinedButton(
+          onPressed: controller.sendPing,
           child: const Text('Ping'),
         ),
         OutlinedButton(
-          onPressed: connected ? onState : null,
+          onPressed: controller.sendTestState,
           child: const Text('Send test state'),
         ),
       ],

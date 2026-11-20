@@ -1,19 +1,32 @@
+using System.Text;
+using ZedPad.Server;
 using ZedPad.Server.Networking;
+using ZedPad.Server.Pairing;
 
-const int Port = 8765;
+Console.OutputEncoding = Encoding.UTF8;
+
+var options = new ServerOptions();
 
 var builder = WebApplication.CreateBuilder(args);
-builder.WebHost.UseUrls($"http://0.0.0.0:{Port}");
+builder.WebHost.UseUrls($"http://0.0.0.0:{options.Port}");
 builder.Logging.ClearProviders();
-builder.Logging.AddSimpleConsole(options =>
+builder.Logging.AddSimpleConsole(logging =>
 {
-    options.SingleLine = true;
-    options.TimestampFormat = "HH:mm:ss ";
+    logging.SingleLine = true;
+    logging.TimestampFormat = "HH:mm:ss ";
 });
+builder.Logging.AddFilter("Microsoft", LogLevel.Warning);
+builder.Services.AddSingleton(options);
 builder.Services.AddControllerSocket();
+builder.Services.AddSingleton<PairingPresenter>();
+builder.Services.AddHostedService<PairingKeyListener>();
 
 var app = builder.Build();
 app.MapControllerSocket();
-app.Lifetime.ApplicationStarted.Register(() => ServerBanner.Print(Port));
+app.Lifetime.ApplicationStarted.Register(() =>
+{
+    ServerBanner.Print(options.Port);
+    app.Services.GetRequiredService<PairingPresenter>().ShowNewCode();
+});
 
 await app.RunAsync();
