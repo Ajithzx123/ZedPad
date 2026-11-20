@@ -122,7 +122,7 @@ class _StatusLine extends StatelessWidget {
       ConnectionStatus.failed => controller.error ?? 'Connection failed',
     };
     final isError = controller.status == ConnectionStatus.failed;
-    return Text(
+    return SelectableText(
       text,
       style: TextStyle(
         color: isError ? Theme.of(context).colorScheme.error : null,
@@ -193,7 +193,7 @@ class _LogView extends StatelessWidget {
         reverse: true,
         padding: const EdgeInsets.all(8),
         itemCount: lines.length,
-        itemBuilder: (_, i) => Text(
+        itemBuilder: (_, i) => SelectableText(
           lines[lines.length - 1 - i],
           style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
         ),

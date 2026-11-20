@@ -40,6 +40,7 @@ class ConnectionController extends ChangeNotifier {
       await channel.ready;
     } catch (e) {
       _error = 'Could not connect to $host:$port ($e)';
+      _addLog('ERROR: $_error');
       _setStatus(ConnectionStatus.failed);
       return;
     }

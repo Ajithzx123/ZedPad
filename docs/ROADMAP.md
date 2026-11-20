@@ -16,19 +16,19 @@ Rule: Windows-only code stays in `ZedPad.Input` so the Mac can build and test ev
 Mac note: all projects target plain `net8.0` (no `net8.0-windows`), so the full solution builds and tests on macOS; Windows API calls are guarded at runtime.
 
 ## Phase 0 - Foundation (STOP after this, get approval)
-- [ ] Git repo + private remote (sync between laptops)
+- [x] Git repo + remote (sync between laptops)
 - [x] `CLAUDE.md`, `AGENTS.md`, `README.md`
 - [x] `docs/`: architecture, protocol (with hex test vectors), development, testing, decisions/
 - [x] .NET solution: Core, Input, Server, Tests (nullable on, analyzers)
 - [x] Flutter skeleton in `app/` (Provider, folder layout, analysis options)
 - [x] CI (GitHub Actions): format, analyze, build, test for both sides
-- [ ] Clean build + tests green on Dell and Mac
+- [ ] Clean build + tests green on Mac (Dell done)
 
 ## Phase 1 - Connectivity spike
 - [x] Console receiver: Kestrel WebSocket, prints IP/port/status/logs
 - [x] Flutter client connects, sends Ping and binary `GamepadState`
 - [x] Protocol codec in Core (C#) and `core/protocol` (Dart) sharing hex vectors
-- Done when: real phone frames appear in the PC console.
+- Done when: real phone frames appear in the PC console. **Verified 2026-11-20** (Realme RMX2170, Android 12, via PC hotspot).
 
 ## Phase 2 - Pairing and sessions
 - [ ] CSPRNG one-time token, ~2 min expiry, single use, never logged
@@ -69,6 +69,8 @@ Mac note: all projects target plain `net8.0` (no `net8.0-windows`), so the full 
 - One phase item at a time; each ends with format + analyze + tests + diff review.
 - Do not start the next phase without approval.
 - Every session: read `docs/STATUS.md` first, update it before ending.
+
+
 
 
 
