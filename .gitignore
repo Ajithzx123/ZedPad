@@ -1,0 +1,11 @@
+# Build output
+bin/
+obj/
+.dart_tool/
+build/
+.idea/
+.vs/
+*.user
+.DS_Store
+.flutter-plugins*
+local.properties

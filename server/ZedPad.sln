@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZedPad.Core", "ZedPad.Core\ZedPad.Core.csproj", "{73458FB4-2771-49B0-BECA-7EA69AB7A372}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZedPad.Input", "ZedPad.Input\ZedPad.Input.csproj", "{005443E5-7854-4A1B-A21B-40086A3C7392}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZedPad.Server", "ZedPad.Server\ZedPad.Server.csproj", "{197DAB4A-CD2C-4419-AE59-EFA2C214B226}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZedPad.Tests", "ZedPad.Tests\ZedPad.Tests.csproj", "{2D12716E-A26E-4630-A3D8-1A2F23D8520B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{73458FB4-2771-49B0-BECA-7EA69AB7A372}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73458FB4-2771-49B0-BECA-7EA69AB7A372}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73458FB4-2771-49B0-BECA-7EA69AB7A372}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73458FB4-2771-49B0-BECA-7EA69AB7A372}.Release|Any CPU.Build.0 = Release|Any CPU
+		{005443E5-7854-4A1B-A21B-40086A3C7392}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{005443E5-7854-4A1B-A21B-40086A3C7392}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{005443E5-7854-4A1B-A21B-40086A3C7392}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{005443E5-7854-4A1B-A21B-40086A3C7392}.Release|Any CPU.Build.0 = Release|Any CPU
+		{197DAB4A-CD2C-4419-AE59-EFA2C214B226}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{197DAB4A-CD2C-4419-AE59-EFA2C214B226}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{197DAB4A-CD2C-4419-AE59-EFA2C214B226}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{197DAB4A-CD2C-4419-AE59-EFA2C214B226}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D12716E-A26E-4630-A3D8-1A2F23D8520B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D12716E-A26E-4630-A3D8-1A2F23D8520B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D12716E-A26E-4630-A3D8-1A2F23D8520B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D12716E-A26E-4630-A3D8-1A2F23D8520B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
