@@ -3,9 +3,9 @@
 Read this first on any machine. Update it at the end of every session and commit + push.
 
 ## Current position
-- **Phase:** 2 - Pairing and sessions: code complete and committed, automated tests green, **not yet tested on a real phone**.
+- **Phase:** 2 - Pairing and sessions: complete and **verified on a real phone** (Realme RMX2170, same Wi-Fi LAN).
 - **Last updated:** 2026-11-21 on Dell (Windows)
-- **Next step:** real-phone pairing test (QR scan and manual code), then approve Phase 3.
+- **Next step:** user approval to start Phase 3 (input engine). Not started.
 
 ## Done
 - Phase 0 foundation and Phase 1 connectivity spike (verified on a Realme RMX2170 over the PC hotspot). Repo: https://github.com/Ajithzx123/ZedPad (public; office account `Ajith-suktha` is a collaborator). CI green at c111085.
@@ -15,6 +15,8 @@ Read this first on any machine. Update it at the end of every session and commit
   - App: `ConnectionController.pair(hosts, port, token)` tries each host (3 s timeout) then pairs (5 s); statuses Disconnected, Connecting, Pairing, Connected, Failed; QR scan screen (`mobile_scanner`, CAMERA permission) and manual entry (address, port, code); clear messages for wrong/expired code.
   - Docs: `protocol.md` pairing rules and link format; shared vectors in `docs/pairing-link-vectors.json`.
 - Gates green on Dell: .NET 46 tests, Flutter 29 tests, format + analyze clean.
+- Phase 2 real-phone test (2026-11-21): QR scan paired, manual entry paired, reused code rejected (`badToken`), wrong code shows "Wrong pairing code".
+- Android build on Windows: `kotlin.incremental=false` added to `app/android/gradle.properties` (see Lessons).
 
 ## Known limits
 - Console QR assumes a dark terminal background (light modules drawn as filled blocks). A light-theme console shows an inverted code; use the typed code instead.
@@ -26,7 +28,9 @@ Read this first on any machine. Update it at the end of every session and commit
 - Phone connect timing out while ping works = Windows Firewall dropping TCP. A mobile hotspot is a **Public** network. Dismissing the firewall popup creates **Block** rules for the exe that override allow rules.
 - Fix (admin PowerShell): allow rule `New-NetFirewallRule -DisplayName "ZedPad" -Direction Inbound -Protocol TCP -LocalPort 8765 -Action Allow -Profile Any`, and remove stale blocks: `Get-NetFirewallRule -DisplayName "ZedPad.Server" | Where-Object { $_.Direction -eq 'Inbound' -and $_.Action -eq 'Block' } | Remove-NetFirewallRule`.
 - Non-admin sessions get "Access is denied" from `Get-NetFirewallRule`; an empty result there does not mean no rule exists.
-- adb wireless debugging port changes between sessions; use `flutter devices`.
+- adb wireless debugging port changes between sessions; use `flutter devices`. Wireless pairing uses a temporary pairing port (`adb pair ip:pairport code`); `adb connect` needs the different port shown on the main Wireless debugging screen. The phone's IP can also change.
+- Android build fails with "this and base files have different roots" (Kotlin incremental cache) when the project is on `D:` and the pub cache on `C:`. Fixed by `kotlin.incremental=false` in `app/android/gradle.properties`; stop stale daemons with `app/android/gradlew.bat --stop` if it persists.
+- A leftover `ZedPad.Server` process can hold port 8765 ("address already in use"); find it with `Get-NetTCPConnection -LocalPort 8765 -State Listen` and stop it.
 
 ## How to test pairing
 1. PC: in a real terminal (so R works) `cd server`, `dotnet run --project ZedPad.Server`. A QR and a code like `ABCD-EFGH` appear (valid 2 minutes; press R for a new one).
@@ -41,3 +45,4 @@ Read this first on any machine. Update it at the end of every session and commit
 ## Session log
 - 2026-11-20 (Dell): planning, Phase 0 scaffold, Phase 1 code and real-phone test, CI fix, Phase 2 code complete with gates green.
 - 2026-11-21 (Dell): committed Phase 2, fixed CI build (SDK pin); corrected stale STATUS wording.
+- 2026-11-21 (Dell, later): Phase 2 verified on the Realme RMX2170 (QR, manual, reused and wrong code); fixed Windows Android build (Kotlin incremental off). Phase 3 awaits approval.
