@@ -3,13 +3,13 @@
 Read this first on any machine. Update it at the end of every session and commit + push.
 
 ## Current position
-- **Phase:** 2 - Pairing and sessions: code complete, automated tests green, **not yet tested on a real phone**.
-- **Last updated:** 2026-11-20 on Dell (Windows)
-- **Next step:** real-phone pairing test (QR scan and manual code), then commit/push and approve Phase 3.
+- **Phase:** 2 - Pairing and sessions: code complete and committed, automated tests green, **not yet tested on a real phone**.
+- **Last updated:** 2026-11-21 on Dell (Windows)
+- **Next step:** real-phone pairing test (QR scan and manual code), then approve Phase 3.
 
 ## Done
 - Phase 0 foundation and Phase 1 connectivity spike (verified on a Realme RMX2170 over the PC hotspot). Repo: https://github.com/Ajithzx123/ZedPad (public; office account `Ajith-suktha` is a collaborator). CI green at c111085.
-- Phase 2 (uncommitted):
+- Phase 2 (committed in 1855cee; CI fixes in 6aef39f and d2717c9: guarded debug request logging, .NET SDK pinned with `global.json`):
   - Core: `PairingTokenService` (8 chars, CSPRNG, 2 min, single use, constant-time compare, injectable clock), `PairingLink`, `ControlMessages` (parse + outgoing JSON).
   - Server: connection must pair within 10 s; unpaired data closes the connection; wrong/expired token gets `pairReject` after 500 ms then closes; version mismatch does not burn the token. Console prints a QR code plus a typed code; press R for a new code. Virtual adapters (vEthernet, Hyper-V, WSL...) are left out of the advertised addresses. Request logging moved to Debug level; Microsoft logs filtered to Warning.
   - App: `ConnectionController.pair(hosts, port, token)` tries each host (3 s timeout) then pairs (5 s); statuses Disconnected, Connecting, Pairing, Connected, Failed; QR scan screen (`mobile_scanner`, CAMERA permission) and manual entry (address, port, code); clear messages for wrong/expired code.
@@ -40,3 +40,4 @@ Read this first on any machine. Update it at the end of every session and commit
 
 ## Session log
 - 2026-11-20 (Dell): planning, Phase 0 scaffold, Phase 1 code and real-phone test, CI fix, Phase 2 code complete with gates green.
+- 2026-11-21 (Dell): committed Phase 2, fixed CI build (SDK pin); corrected stale STATUS wording.
